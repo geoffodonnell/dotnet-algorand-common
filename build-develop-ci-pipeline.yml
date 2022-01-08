@@ -1,0 +1,61 @@
+# Develop branch CI Pipeline
+
+name: DevelopCI_$(Year:yyyy).$(Month).$(DayOfMonth).$(Rev:r)    
+
+trigger:
+- develop
+
+variables:
+  buildConfiguration: 'Release'
+  nugetPackageId: 'Algorand.Common.Develop.CI'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .Net Core SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '3.1.x'
+
+- task: bleddynrichards.Assembly-Info-Task.Assembly-Info-NetCore.Assembly-Info-NetCore@2
+  displayName: 'Update assembly info'
+  inputs:
+    Path: '$(Build.SourcesDirectory)/src/'
+    FileNames: 'Algorand.Common/Algorand.Common.csproj'
+    InsertAttributes: true
+    WriteBOM: true
+    FileVersionNumber: '$(Build.BuildNumber)'
+    InformationalVersion: '$(Build.BuildNumber)'
+    LogLevel: 'verbose'
+    FailOnWarning: false
+    DisableTelemetry: true
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build Algorand.Common .NET SDK'
+  inputs:
+    command: 'build'
+    projects: 'src/Algorand.Common/Algorand.Common.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Test Algorand.Common .NET SDK'
+  inputs:
+    command: 'test'
+    projects: 'test/Algorand.Common.UnitTest/Algorand.Common.UnitTest.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Pack Algorand.Common .NET SDK Nuget package'
+  inputs:
+    command: 'custom'
+    custom: 'pack'
+    arguments: '$(Build.SourcesDirectory)/src/Algorand.Common/Algorand.Common.csproj --output $(Build.ArtifactStagingDirectory) --no-build /p:Configuration=$(buildConfiguration) /p:PackageID=$(nugetPackageId) /p:PackageVersion=$(AssemblyInfo.FileVersion) --verbosity Detailed'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Algorand.Common .NET SDK artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
