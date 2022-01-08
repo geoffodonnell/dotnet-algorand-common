@@ -31,7 +31,7 @@ namespace Algorand.Common {
 
             PostTransactionsResponse response = null;
 
-            using (var payload = new MemoryStream(bytes.ToArray())) {
+            using (var payload = new MemoryStream(bytes)) {
                 response = await client.TransactionsAsync(payload);
             }
 
