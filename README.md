@@ -27,4 +27,4 @@ dotnet-algorand-common is licensed under a MIT license except for the exceptions
 None.
 
 # Disclaimer
-Nothing in the repo constitutes professional and/or financial advice. Use this package at your own risk.
+Nothing in the repo constitutes professional and/or financial advice. Use this package at your own risk. 
