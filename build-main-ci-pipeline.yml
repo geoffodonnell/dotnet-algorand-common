@@ -33,28 +33,28 @@ steps:
     DisableTelemetry: true
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build Algorand.Common .NET SDK'
+  displayName: 'Build Algorand.Common'
   inputs:
     command: 'build'
     projects: 'src/Algorand.Common/Algorand.Common.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Test Algorand.Common .NET SDK'
+  displayName: 'Test Algorand.Common'
   inputs:
     command: 'test'
     projects: 'test/Algorand.Common.UnitTest/Algorand.Common.UnitTest.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Pack Algorand.Common .NET SDK Nuget package'
+  displayName: 'Pack Algorand.Common Nuget package'
   inputs:
     command: 'custom'
     custom: 'pack'
     arguments: '$(Build.SourcesDirectory)/src/Algorand.Common/Algorand.Common.csproj --output $(Build.ArtifactStagingDirectory) --no-build /p:Configuration=$(buildConfiguration) /p:PackageID=$(nugetPackageId) /p:PackageVersion=$(AssemblyInfo.FileVersion) --verbosity Detailed'
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Algorand.Common .NET SDK artifact'
+  displayName: 'Publish Algorand.Common artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
