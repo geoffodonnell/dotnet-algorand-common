@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
-		<Description>This library provides support for the Algorand .NET SDK</Description>
+		<Description>This library provides support for the Algorand .NET SDK.</Description>
 		<Company></Company>
 		<PackageProjectUrl>https://github.com/geoffodonnell/dotnet-algorand-common</PackageProjectUrl>
 		<Authors>Geoff O'Donnell</Authors>
