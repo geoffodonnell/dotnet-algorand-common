@@ -2,11 +2,13 @@
 using Algorand.V2.Algod.Model;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Algorand.Common {
 
+	/// <summary>
+	/// Extension methods for <see cref="IDefaultApi"/>.
+	/// </summary>
 	public static class DefaultApiExtensions {
 
         /// <summary>

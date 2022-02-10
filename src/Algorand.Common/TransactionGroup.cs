@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Algorand.Common {
 
+	/// <summary>
+	///  A batch operation to be submitted as a unit; all transactions in the batch either pass or fail.
+	/// </summary>
 	public class TransactionGroup {
 
 		/// <summary>

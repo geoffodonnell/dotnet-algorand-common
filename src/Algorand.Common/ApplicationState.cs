@@ -9,7 +9,7 @@ using System.Text;
 namespace Algorand.Common {
 
     /// <summary>
-    /// Contains methods for working with application state (global and local)
+    /// Contains methods for working with application state (global and local).
     /// </summary>
 	public static class ApplicationState {
 

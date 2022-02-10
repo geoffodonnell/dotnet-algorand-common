@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace Algorand.Common {
 
+    /// <summary>
+    /// Tools for building programs from <see cref="ProgramLogic"/> models.
+    /// </summary>
 	public static class ProgramBuilder {
 
         /// <summary>

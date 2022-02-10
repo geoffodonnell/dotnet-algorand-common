@@ -7,9 +7,14 @@
 		<PackageProjectUrl>https://github.com/geoffodonnell/dotnet-algorand-common</PackageProjectUrl>
 		<Authors>Geoff O'Donnell</Authors>
 		<RepositoryUrl>https://github.com/geoffodonnell/dotnet-algorand-common</RepositoryUrl>
-	</PropertyGroup>	
-	
-  <ItemGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<NoWarn>1591;1701;1702</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
     <PackageReference Include="Algorand" Version="0.2.1" />
     <PackageReference Include="BouncyCastle.NetCore" Version="1.8.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
