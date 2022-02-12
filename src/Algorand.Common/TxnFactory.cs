@@ -56,7 +56,7 @@ namespace Algorand.Common {
 				result.note = note;
 			}
 
-			return null;
+			return result;
 		}
 
 		/// <summary>
