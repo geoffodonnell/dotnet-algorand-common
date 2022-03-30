@@ -4,7 +4,7 @@
 [![Donate Algo](https://img.shields.io/badge/Donate-ALGO-000000.svg?style=flat)](https://algoexplorer.io/address/EJMR773OGLFAJY5L2BCZKNA5PXLDJOWJK4ED4XDYTYH57CG3JMGQGI25DQ)
 
 # Overview
-This library provides support for the Algorand .NET SDK.
+This library provides support for the Algorand .NET SDK 2 maintained by [@FrankSzendzielarz](https://github.com/FrankSzendzielarz).
 
 # Installation
 Releases are available at [nuget.org](https://www.nuget.org/packages/Algorand.Common/).

@@ -7,7 +7,7 @@ trigger: none
 variables:
   buildConfiguration: 'Release'
   nugetPackageId: 'Algorand.Common'
-  majorVersion: '0'
+  majorVersion: '1'
   minorVersion: '0'
   patchVersion: '0'
 
