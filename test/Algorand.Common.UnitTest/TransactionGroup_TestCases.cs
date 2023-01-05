@@ -1,4 +1,4 @@
-using Algorand.V2.Algod.Model;
+using Algorand.Algod.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Encoders;
@@ -27,8 +27,8 @@ namespace Algorand.Common.UnitTest {
 		[TestMethod]
 		public void TransactionGroup_Add_And_Sign() {
 
-			var tx1 = Utils.GetPaymentTransaction(Account.Address, (new Account()).Address, 5000000, "", TxParams);
-			var tx2 = Utils.GetPaymentTransaction(Account.Address, (new Account()).Address, 6000000, "", TxParams);
+			var tx1 = TxnFactory.Pay(Account.Address, (new Account()).Address, 5000000, TxParams);
+			var tx2 = TxnFactory.Pay(Account.Address, (new Account()).Address, 6000000, TxParams);
 
 			var grp = new TransactionGroup(new[] { tx1 });
 

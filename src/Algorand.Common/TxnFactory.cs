@@ -1,5 +1,5 @@
-﻿using Algorand.V2.Algod.Model;
-using Algorand.V2.Indexer.Model;
+﻿using Algorand.Algod.Model;
+using Algorand.Algod.Model.Transactions;
 using System.Linq;
 
 namespace Algorand.Common {
@@ -21,7 +21,7 @@ namespace Algorand.Common {
 		/// <param name="foreignAssets">Foreign asset IDs</param>
 		/// <param name="applicationArgs">Application arguments</param>
 		/// <param name="note">Transaction note</param>
-		/// <returns></returns>
+		/// <returns>Application call transaction</returns>
 		public static Transaction AppCall(
 			Address from,
 			ulong application,
@@ -33,27 +33,66 @@ namespace Algorand.Common {
 			byte[][] applicationArgs = null,
 			byte[] note = null) {
 
-			var result = Algorand.Utils.GetApplicationCallTransaction(
-				from, application, txParams);
+			ApplicationCallTransaction result = null;
+
+			switch (onCompletion) {
+				case OnCompletion.Noop:
+					result = new ApplicationNoopTransaction() {
+						ApplicationId = application
+					};
+					break;
+				case OnCompletion.Optin:
+					result = new ApplicationOptInTransaction() {
+						ApplicationId = application
+					};
+					break;
+				case OnCompletion.Closeout:
+					result = new ApplicationCloseOutTransaction() {
+						ApplicationId = application
+					};
+					break;
+				case OnCompletion.Clear:
+					result = new ApplicationClearStateTransaction() {
+						ApplicationId = application
+					};
+					break;
+				case OnCompletion.Update:
+					result = new ApplicationUpdateTransaction() {
+						ApplicationId = application
+					}; 
+					break;
+				case OnCompletion.Delete:
+					result = new ApplicationDeleteTransaction() {
+						ApplicationId = application
+					};
+					break;
+			}
+
+			result.Sender = from;
+			result.Fee = txParams.Fee;
+			result.GenesisID = txParams.GenesisId;
+			result.GenesisHash = new Digest(txParams.GenesisHash);
+			result.FirstValid = txParams.LastRound;
+			result.LastValid = txParams.LastRound + 1000;
 
 			if (fee.HasValue) {
-				result.fee = fee.Value;
+				result.Fee = fee.Value;
 			}
 
 			if (foreignApps != null) {
-				result.foreignApps = foreignApps.ToList();
+				result.ForeignApps = foreignApps.ToList();
 			}
 
 			if (foreignAssets != null) {
-				result.foreignAssets = foreignAssets.ToList();
+				result.ForeignAssets = foreignAssets.ToList();
 			}
 
 			if (applicationArgs != null) {
-				result.applicationArgs = applicationArgs.ToList();
+				result.ApplicationArgs = applicationArgs.ToList();
 			}
 
 			if (note != null) {
-				result.note = note;
+				result.Note = note;
 			}
 
 			return result;
@@ -71,7 +110,15 @@ namespace Algorand.Common {
 			ulong application,
 			TransactionParametersResponse txParams) {
 
-			return Algorand.Utils.GetApplicationOptinTransaction(from, application, txParams);
+			return new ApplicationOptInTransaction() {
+				Sender = from,
+				ApplicationId = application,
+				Fee = txParams.Fee,
+				GenesisID = txParams.GenesisId,
+				GenesisHash = new Digest(txParams.GenesisHash),
+				FirstValid = txParams.LastRound,
+				LastValid = txParams.LastRound + 1000
+			};
 		}
 
 		/// <summary>
@@ -115,22 +162,31 @@ namespace Algorand.Common {
 			ulong? fee = null,
 			byte[] note = null) {
 
-			Transaction result = null;
+			Transaction result;
 
 			if (!asset.HasValue || asset == 0) {
-				result = Algorand.Utils.GetPaymentTransaction(
+				result = PaymentTransaction.GetPaymentTransactionFromNetworkTransactionParameters(
 					from, to, amount, null, txParams);
 			} else {
-				result = Algorand.Utils.GetTransferAssetTransaction(
-					from, to, asset, amount, txParams);
+				result = new AssetTransferTransaction() {
+					XferAsset = asset,
+					AssetAmount = amount,
+					AssetReceiver = to,
+					Sender = from,
+					Fee = fee ?? txParams.Fee,
+					GenesisID = txParams.GenesisId,
+					GenesisHash = new Digest(txParams.GenesisHash),
+					FirstValid = txParams.LastRound,
+					LastValid = txParams.LastRound + 1000
+				};
 			}
 
 			if (fee.HasValue) {
-				result.fee = fee.Value;
+				result.Fee = fee.Value;
 			}
 
 			if (note != null) {
-				result.note = note;
+				result.Note = note;
 			}
 
 			return result;

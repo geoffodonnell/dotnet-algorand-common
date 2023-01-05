@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Algorand.Algod.Model;
+using Algorand.Algod.Model.Transactions;
+using Algorand.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -62,7 +65,7 @@ namespace Algorand.Common {
 		/// <param name="account"></param>
 		public virtual void Sign(Account account) {
 
-			PerformSign(account.Address, s => account.SignTransaction(s));
+			PerformSign(account.Address, s => s.Sign(account));
 		}
 
 		/// <summary>
@@ -80,9 +83,9 @@ namespace Algorand.Common {
 		/// <param name="privateKey"></param>
 		public virtual void SignWithPrivateKey(byte[] privateKey) {
 
-			var account = Account.AccountFromPrivateKey(privateKey);
+			var account = new Account(privateKey);
 
-			PerformSign(account.Address, s => account.SignTransaction(s));
+			PerformSign(account.Address, s => s.Sign(account));
 		}
 
 		/// <summary>
@@ -99,7 +102,7 @@ namespace Algorand.Common {
 			var bytes = new List<byte>();
 
 			foreach (var tx in SignedTransactions) {
-				bytes.AddRange(Encoder.EncodeToMsgPack(tx));
+				bytes.AddRange(Encoder.EncodeToMsgPackOrdered(tx));
 			}
 
 			return bytes.ToArray();
@@ -110,10 +113,8 @@ namespace Algorand.Common {
 		/// </summary>
 		protected virtual void SetGroupIdOnAllTransactions() {
 
-			var gid = TxGroup.ComputeGroupID(Transactions);
-
-			foreach (var tx in Transactions) {
-				tx.AssignGroupID(gid);
+			if (Transactions != null && Transactions.Length > 0) {
+				TxGroup.AssignGroupID(Transactions);
 			}
 		}
 
@@ -130,7 +131,7 @@ namespace Algorand.Common {
 			}
 
 			for (var i = 0; i < Transactions.Length; i++) {
-				if (Transactions[i].sender.Equals(sender)) {
+				if (Transactions[i].Sender.Equals(sender)) {
 					var signed = action(Transactions[i]);
 					SignedTransactions[i] = signed;
 				}
@@ -147,10 +148,10 @@ namespace Algorand.Common {
 			LogicsigSignature logicsig, Transaction tx) {
 
 			try {
-				return Account.SignLogicsigTransaction(logicsig, tx);
+				return tx.Sign(logicsig);
 			} catch (Exception) {
-				if (tx.sender.Equals(logicsig.Address)) {
-					return new SignedTransaction(tx, logicsig, tx.TxID());
+				if (tx.Sender.Equals(logicsig.Address)) {
+					return new SignedTransaction(tx, logicsig.Sig);
 				}
 
 				throw;

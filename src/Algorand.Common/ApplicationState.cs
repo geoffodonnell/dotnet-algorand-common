@@ -50,7 +50,7 @@ namespace Algorand.Common {
         /// <param name="key">State key</param>
         /// <returns>The state value, if the application ID and key are found, null otherwise</returns>
         public static string GetBytes(
-            ICollection<Algorand.V2.Algod.Model.ApplicationLocalState> state, ulong applicationId, string key) {
+            ICollection<Algorand.Algod.Model.ApplicationLocalState> state, ulong applicationId, string key) {
 
             var applicationState = state.FirstOrDefault(s => s.Id == applicationId);
 
@@ -69,7 +69,7 @@ namespace Algorand.Common {
         /// <param name="key">State key</param>
         /// <returns>The state value, if the application ID and key are found, null otherwise</returns>
         public static string GetBytes(
-            ICollection<Algorand.V2.Indexer.Model.ApplicationLocalState> state, ulong applicationId, string key) {
+            ICollection<Algorand.Indexer.Model.ApplicationLocalState> state, ulong applicationId, string key) {
 
             var applicationState = state.FirstOrDefault(s => s.Id == applicationId);
 
@@ -88,7 +88,7 @@ namespace Algorand.Common {
         /// <param name="key">State key</param>
         /// <returns>The state value, if the application ID and key are found, null otherwise</returns>
         public static ulong? GetNumber(
-            ICollection<Algorand.V2.Algod.Model.ApplicationLocalState> state, ulong applicationId, string key) {
+            ICollection<Algorand.Algod.Model.ApplicationLocalState> state, ulong applicationId, string key) {
 
             var applicationState = state.FirstOrDefault(s => s.Id == applicationId);
 
@@ -107,7 +107,7 @@ namespace Algorand.Common {
         /// <param name="key">State key</param>
         /// <returns>The state value, if the application ID and key are found, null otherwise</returns>
         public static ulong? GetNumber(
-            ICollection<Algorand.V2.Indexer.Model.ApplicationLocalState> state, ulong applicationId, string key) {
+            ICollection<Algorand.Indexer.Model.ApplicationLocalState> state, ulong applicationId, string key) {
 
             var applicationState = state.FirstOrDefault(s => s.Id == applicationId);
 
@@ -125,7 +125,7 @@ namespace Algorand.Common {
         /// <param name="key">State key</param>
         /// <returns>The state value, if the key is found, null otherwise</returns>
         public static string GetBytes(
-            Algorand.V2.Algod.Model.TealKeyValueStore state, string key) {
+            ICollection<Algorand.Algod.Model.TealKeyValue> state, string key) {
 
             var value = GetValue(state, key);
 
@@ -138,54 +138,34 @@ namespace Algorand.Common {
             return value.Bytes;
         }
 
-        /// <summary>
-        /// Retrieve a state value
-        /// </summary>
-        /// <param name="state">State store</param>
-        /// <param name="key">State key</param>
-        /// <returns>The state value, if the key is found, null otherwise</returns>
-        public static string GetBytes(
-            Algorand.V2.Indexer.Model.TealKeyValueStore state, string key) {
+		/// <summary>
+		/// Retrieve a state value
+		/// </summary>
+		/// <param name="state">State store</param>
+		/// <param name="key">State key</param>
+		/// <returns>The state value, if the key is found, null otherwise</returns>
+		public static string GetBytes(
+            ICollection<Algorand.Indexer.Model.TealKeyValue> state, string key) {
 
-            var value = GetValue(state, key);
+			var value = GetValue(state, key);
 
-            if (value == null) {
-                return null;
-            }
+			if (value == null) {
+				return null;
+			}
 
-            //TODO: Check type
+			//TODO: Check type
 
-            return value.Bytes;
-        }
+			return value.Bytes;
+		}
 
-        /// <summary>
-        /// Retrieve a state value
-        /// </summary>
-        /// <param name="state">State store</param>
-        /// <param name="key">State key</param>
-        /// <returns>The state value, if the key is found, null otherwise</returns>
-        public static ulong? GetNumber(
-            Algorand.V2.Algod.Model.TealKeyValueStore state, string key) {
-
-            var value = GetValue(state, key);
-
-            if (value == null) {
-                return null;
-            }
-
-            //TODO: Check type
-
-            return value.Uint;
-        }
-
-        /// <summary>
-        /// Retrieve a state value
-        /// </summary>
-        /// <param name="state">State store</param>
-        /// <param name="key">State key</param>
-        /// <returns>The state value, if the key is found, null otherwise</returns>
-        public static ulong? GetNumber(
-            Algorand.V2.Indexer.Model.TealKeyValueStore state, string key) {
+		/// <summary>
+		/// Retrieve a state value
+		/// </summary>
+		/// <param name="state">State store</param>
+		/// <param name="key">State key</param>
+		/// <returns>The state value, if the key is found, null otherwise</returns>
+		public static ulong? GetNumber(
+            ICollection<Algorand.Algod.Model.TealKeyValue> state, string key) {
 
             var value = GetValue(state, key);
 
@@ -198,14 +178,34 @@ namespace Algorand.Common {
             return value.Uint;
         }
 
-        /// <summary>
-        /// Retrieve a state value
-        /// </summary>
-        /// <param name="state">State store as a dictionary</param>
-        /// <param name="key">State key</param>
-        /// <returns>The state value, if the key is found, null otherwise</returns>
-        public static ulong? GetNumber(
-            Dictionary<string, Algorand.V2.Algod.Model.TealValue> state, string key) {
+		/// <summary>
+		/// Retrieve a state value
+		/// </summary>
+		/// <param name="state">State store</param>
+		/// <param name="key">State key</param>
+		/// <returns>The state value, if the key is found, null otherwise</returns>
+		public static ulong? GetNumber(
+			ICollection<Algorand.Indexer.Model.TealKeyValue> state, string key) {
+
+			var value = GetValue(state, key);
+
+			if (value == null) {
+				return null;
+			}
+
+			//TODO: Check type
+
+			return value.Uint;
+		}
+
+		/// <summary>
+		/// Retrieve a state value
+		/// </summary>
+		/// <param name="state">State store as a dictionary</param>
+		/// <param name="key">State key</param>
+		/// <returns>The state value, if the key is found, null otherwise</returns>
+		public static ulong? GetNumber(
+            Dictionary<string, Algorand.Algod.Model.TealValue> state, string key) {
 
             if (state.TryGetValue(key, out var value)) {
                 return value.Uint;
@@ -223,7 +223,7 @@ namespace Algorand.Common {
         /// <param name="key">State key</param>
         /// <returns>The state value, if the key is found, null otherwise</returns>
         public static ulong? GetNumber(
-            Dictionary<string, Algorand.V2.Indexer.Model.TealValue> state, string key) {
+            Dictionary<string, Algorand.Indexer.Model.TealValue> state, string key) {
 
             if (state.TryGetValue(key, out var value)) {
                 return value.Uint;
@@ -241,7 +241,7 @@ namespace Algorand.Common {
         /// <param name="key">State key</param>
         /// <returns>The state value, if the key is found, null otherwise</returns>
         public static string GetBytes(
-            Dictionary<string, Algorand.V2.Algod.Model.TealValue> state, string key) {
+            Dictionary<string, Algorand.Algod.Model.TealValue> state, string key) {
 
             if (state.TryGetValue(key, out var value)) {
                 return value.Bytes;
@@ -259,7 +259,7 @@ namespace Algorand.Common {
         /// <param name="key">State key</param>
         /// <returns>The state value, if the key is found, null otherwise</returns>
         public static string GetBytes(
-            Dictionary<string, Algorand.V2.Indexer.Model.TealValue> state, string key) {
+            Dictionary<string, Algorand.Indexer.Model.TealValue> state, string key) {
 
             if (state.TryGetValue(key, out var value)) {
                 return value.Bytes;
@@ -270,8 +270,8 @@ namespace Algorand.Common {
             return null;
         }
 
-        private static Algorand.V2.Algod.Model.TealValue GetValue(
-            Algorand.V2.Algod.Model.TealKeyValueStore state, string key) {
+        private static Algorand.Algod.Model.TealValue GetValue(
+            ICollection<Algorand.Algod.Model.TealKeyValue> state, string key) {
 
             var found = state.FirstOrDefault(s => String.Equals(s.Key, key, mCmp));
 
@@ -283,20 +283,20 @@ namespace Algorand.Common {
             return found?.Value;
         }
 
-        private static Algorand.V2.Indexer.Model.TealValue GetValue(
-            Algorand.V2.Indexer.Model.TealKeyValueStore state, string key) {
+		private static Algorand.Indexer.Model.TealValue GetValue(
+			ICollection<Algorand.Indexer.Model.TealKeyValue> state, string key) {
 
-            var found = state.FirstOrDefault(s => String.Equals(s.Key, key, mCmp));
+			var found = state.FirstOrDefault(s => String.Equals(s.Key, key, mCmp));
 
-            if (found == null) {
-                key = EncodeKey(key);
-                found = state.FirstOrDefault(s => String.Equals(s.Key, key, mCmp));
-            }
+			if (found == null) {
+				key = EncodeKey(key);
+				found = state.FirstOrDefault(s => String.Equals(s.Key, key, mCmp));
+			}
 
-            return found?.Value;
-        }
+			return found?.Value;
+		}
 
-        private static T[] Join<T>(IEnumerable<T> a, IEnumerable<T> b) {
+		private static T[] Join<T>(IEnumerable<T> a, IEnumerable<T> b) {
 
             var result = a.ToList();
 

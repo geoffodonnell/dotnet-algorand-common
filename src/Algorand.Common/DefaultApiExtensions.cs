@@ -1,7 +1,8 @@
-﻿using Algorand.V2.Algod;
-using Algorand.V2.Algod.Model;
+﻿using Algorand.Algod;
+using Algorand.Algod.Model;
+using Algorand.Algod.Model.Transactions;
 using System;
-using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Algorand.Common {
@@ -29,16 +30,10 @@ namespace Algorand.Common {
 				throw new ArgumentNullException(nameof(txns));
 			}
 
-            var bytes = txns.EncodeToMsgPack();
-
-            PostTransactionsResponse response = null;
-
-            using (var payload = new MemoryStream(bytes)) {
-                response = await client.TransactionsAsync(payload);
-            }
+            var response = await client.TransactionsAsync(txns.SignedTransactions.ToList());
 
             if (wait) {
-                await WaitForTransactionToComplete(client, response.TxId);
+                await WaitForTransactionToComplete(client, response.Txid);
             }
 
             return response;
@@ -51,7 +46,7 @@ namespace Algorand.Common {
         /// <param name="txId">Transaction ID</param>
         /// <param name="timeout">Round timeout</param>
         /// <returns>The pending transaction response</returns>
-        public static async Task<PendingTransactionResponse> WaitForTransactionToComplete(
+        public static async Task<Transaction> WaitForTransactionToComplete(
             this IDefaultApi client, string txId, ulong timeout = 3) {
 
             // Source: https://github.com/RileyGe/dotnet-algorand-sdk/blob/345ac4a540abb3f8094b2f97be81bcef3ff6f385/dotnet-algorand-sdk/Util/Utils.cs#L47
@@ -64,12 +59,12 @@ namespace Algorand.Common {
 				throw new ArgumentException($"'{nameof(txId)}' cannot be null or whitespace.", nameof(txId));
 			}
 
-			var response = await client.StatusAsync();
+			var response = await client.GetStatusAsync();
             var start = response.LastRound + 1;
             var current = start;
 
             while (current < (start + timeout)) {
-                var pendingInfo = await client.PendingGetAsync(txId, null);
+                var pendingInfo = await client.PendingTransactionInformationAsync(txId, null) as Transaction;
 
                 if (pendingInfo != null) {
                     if (pendingInfo.ConfirmedRound != null && pendingInfo.ConfirmedRound > 0) {
@@ -82,7 +77,7 @@ namespace Algorand.Common {
                     }
                 }
 
-                await client.WaitForBlockAfterAsync(current);
+                await client.WaitForBlockAsync(current);
                 current++;
             }
 
