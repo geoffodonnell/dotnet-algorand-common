@@ -19,6 +19,7 @@ namespace Algorand.Common {
 		/// <param name="fee">Transaction fee</param>
 		/// <param name="foreignApps">Foreign application IDs</param>
 		/// <param name="foreignAssets">Foreign asset IDs</param>
+		/// <param name="accounts">Accounts</param>
 		/// <param name="applicationArgs">Application arguments</param>
 		/// <param name="note">Transaction note</param>
 		/// <returns>Application call transaction</returns>
@@ -30,6 +31,7 @@ namespace Algorand.Common {
 			ulong? fee = null,
 			ulong[] foreignApps = null,
 			ulong[] foreignAssets = null,
+			Address[] accounts = null,
 			byte[][] applicationArgs = null,
 			byte[] note = null) {
 
@@ -87,6 +89,10 @@ namespace Algorand.Common {
 				result.ForeignAssets = foreignAssets.ToList();
 			}
 
+			if (accounts != null) {
+				result.Accounts = accounts.ToList();
+			}
+
 			if (applicationArgs != null) {
 				result.ApplicationArgs = applicationArgs.ToList();
 			}
@@ -113,6 +119,51 @@ namespace Algorand.Common {
 			return new ApplicationOptInTransaction() {
 				Sender = from,
 				ApplicationId = application,
+				Fee = txParams.Fee,
+				GenesisID = txParams.GenesisId,
+				GenesisHash = new Digest(txParams.GenesisHash),
+				FirstValid = txParams.LastRound,
+				LastValid = txParams.LastRound + 1000
+			};
+		}
+
+		/// <summary>
+		/// Create an asset create transaction
+		/// </summary>
+		/// <param name="assetParams">Asset parameters</param>
+		/// <param name="txParams">Network parameters</param>
+		/// <returns>Asset create transaction</returns>
+		public static Transaction AssetCreate(
+			AssetParams assetParams,
+			TransactionParametersResponse txParams) {
+
+			return new AssetCreateTransaction {
+				AssetParams = assetParams,
+				Fee = txParams.Fee,
+				GenesisID = txParams.GenesisId,
+				GenesisHash = new Digest(txParams.GenesisHash),
+				FirstValid = txParams.LastRound,
+				LastValid = txParams.LastRound + 1000
+			};
+		}
+
+		/// <summary>
+		/// Create an asset opt-in transaction
+		/// </summary>
+		/// <param name="from">Sender address</param>
+		/// <param name="asset">Asset ID</param>
+		/// <param name="txParams">Network parameters</param>
+		/// <returns>Asset opt-in transaction</returns>
+		public static Transaction AssetOptIn(
+			Address from,
+			ulong asset,
+			TransactionParametersResponse txParams) {
+
+			return new AssetTransferTransaction() {
+				XferAsset = asset,
+				AssetAmount = 0,
+				AssetReceiver = from,
+				Sender = from,
 				Fee = txParams.Fee,
 				GenesisID = txParams.GenesisId,
 				GenesisHash = new Digest(txParams.GenesisHash),
