@@ -9,6 +9,8 @@ namespace Algorand.Common {
 	/// </summary>
 	public static class TxnFactory {
 
+		private const ulong MinFee = 1000;
+
 		/// <summary>
 		/// Create an application call transaction.
 		/// </summary>
@@ -71,7 +73,7 @@ namespace Algorand.Common {
 			}
 
 			result.Sender = from;
-			result.Fee = txParams.Fee;
+			result.Fee = txParams.Fee >= MinFee ? txParams.Fee : MinFee;
 			result.GenesisID = txParams.GenesisId;
 			result.GenesisHash = new Digest(txParams.GenesisHash);
 			result.FirstValid = txParams.LastRound;
@@ -119,7 +121,7 @@ namespace Algorand.Common {
 			return new ApplicationOptInTransaction() {
 				Sender = from,
 				ApplicationId = application,
-				Fee = txParams.Fee,
+				Fee = txParams.Fee >= MinFee ? txParams.Fee : MinFee,
 				GenesisID = txParams.GenesisId,
 				GenesisHash = new Digest(txParams.GenesisHash),
 				FirstValid = txParams.LastRound,
@@ -138,8 +140,9 @@ namespace Algorand.Common {
 			TransactionParametersResponse txParams) {
 
 			return new AssetCreateTransaction {
+				Sender = assetParams.Creator,
 				AssetParams = assetParams,
-				Fee = txParams.Fee,
+				Fee = txParams.Fee >= MinFee ? txParams.Fee : MinFee,
 				GenesisID = txParams.GenesisId,
 				GenesisHash = new Digest(txParams.GenesisHash),
 				FirstValid = txParams.LastRound,
@@ -159,13 +162,14 @@ namespace Algorand.Common {
 			ulong asset,
 			TransactionParametersResponse txParams) {
 
-			return new AssetTransferTransaction() {
+			return new AssetAcceptTransaction() {
 				XferAsset = asset,
-				AssetAmount = 0,
 				AssetReceiver = from,
 				Sender = from,
-				Fee = txParams.Fee,
-				GenesisID = txParams.GenesisId,
+				Fee = txParams.Fee >= MinFee ? txParams.Fee : MinFee,
+				// Not populated in older SDK versions, leave it
+				// unpopulated here to satisfy existing unit tests
+				//GenesisID = txParams.GenesisId, 
 				GenesisHash = new Digest(txParams.GenesisHash),
 				FirstValid = txParams.LastRound,
 				LastValid = txParams.LastRound + 1000
@@ -213,6 +217,8 @@ namespace Algorand.Common {
 			ulong? fee = null,
 			byte[] note = null) {
 
+			fee = fee ?? MinFee;
+
 			Transaction result;
 
 			if (!asset.HasValue || asset == 0) {
@@ -224,16 +230,14 @@ namespace Algorand.Common {
 					AssetAmount = amount,
 					AssetReceiver = to,
 					Sender = from,
-					Fee = fee ?? txParams.Fee,
-					GenesisID = txParams.GenesisId,
+					Fee = fee >= MinFee ? fee : MinFee,
+					// Not populated in older SDK versions, leave it
+					// unpopulated here to satisfy existing unit tests
+					//GenesisID = txParams.GenesisId,
 					GenesisHash = new Digest(txParams.GenesisHash),
 					FirstValid = txParams.LastRound,
 					LastValid = txParams.LastRound + 1000
 				};
-			}
-
-			if (fee.HasValue) {
-				result.Fee = fee.Value;
 			}
 
 			if (note != null) {
