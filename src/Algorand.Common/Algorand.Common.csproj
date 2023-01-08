@@ -8,11 +8,19 @@
 		<Authors>Geoff O'Donnell</Authors>
 		<RepositoryUrl>https://github.com/geoffodonnell/dotnet-algorand-common</RepositoryUrl>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<NoWarn>1591;1701;1702</NoWarn>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 	<ItemGroup>
     <PackageReference Include="Algorand2" Version="1.0.0.15" />
