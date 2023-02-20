@@ -15,7 +15,7 @@ namespace Algorand.Common {
 		/// Create an application call transaction.
 		/// </summary>
 		/// <param name="from">Sender address</param>
-		/// <param name="application">Application ID</param>
+		/// <param name="application">Application ID (0 for creation)</param>
 		/// <param name="txParams">Network parameters</param>
 		/// <param name="onCompletion">On complete action</param>
 		/// <param name="fee">Transaction fee</param>
@@ -24,6 +24,10 @@ namespace Algorand.Common {
 		/// <param name="accounts">Accounts</param>
 		/// <param name="applicationArgs">Application arguments</param>
 		/// <param name="note">Transaction note</param>
+		/// <param name="approvalProgram">Approval program</param>
+		/// <param name="clearStateProgram"></param>
+		/// <param name="globalStateSchema"></param>
+		/// <param name="localStateSchema"></param>
 		/// <returns>Application call transaction</returns>
 		public static Transaction AppCall(
 			Address from,
@@ -35,15 +39,28 @@ namespace Algorand.Common {
 			ulong[] foreignAssets = null,
 			Address[] accounts = null,
 			byte[][] applicationArgs = null,
-			byte[] note = null) {
+			byte[] note = null,
+			TEALProgram approvalProgram = null,
+			TEALProgram clearStateProgram = null,
+			StateSchema globalStateSchema = null,
+			StateSchema localStateSchema = null) {
 
 			ApplicationCallTransaction result = null;
 
 			switch (onCompletion) {
 				case OnCompletion.Noop:
-					result = new ApplicationNoopTransaction() {
-						ApplicationId = application
-					};
+					if (application == 0) {
+						result = new ApplicationCreateTransaction() {
+							ApprovalProgram = approvalProgram,
+							ClearStateProgram = clearStateProgram,
+							GlobalStateSchema = globalStateSchema,
+							LocalStateSchema = localStateSchema
+						};
+					} else {
+						result = new ApplicationNoopTransaction() {
+							ApplicationId = application
+						};
+					}					
 					break;
 				case OnCompletion.Optin:
 					result = new ApplicationOptInTransaction() {
@@ -62,7 +79,11 @@ namespace Algorand.Common {
 					break;
 				case OnCompletion.Update:
 					result = new ApplicationUpdateTransaction() {
-						ApplicationId = application
+						ApplicationId = application,
+						ApprovalProgram = approvalProgram,
+						ClearStateProgram = clearStateProgram,
+						GlobalStateSchema = globalStateSchema,
+						LocalStateSchema = localStateSchema
 					}; 
 					break;
 				case OnCompletion.Delete:
