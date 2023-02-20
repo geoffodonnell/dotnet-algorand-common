@@ -25,9 +25,9 @@ namespace Algorand.Common {
 		/// <param name="applicationArgs">Application arguments</param>
 		/// <param name="note">Transaction note</param>
 		/// <param name="approvalProgram">Approval program</param>
-		/// <param name="clearStateProgram"></param>
-		/// <param name="globalStateSchema"></param>
-		/// <param name="localStateSchema"></param>
+		/// <param name="clearStateProgram">Clear program</param>
+		/// <param name="globalStateSchema">Global State Schema</param>
+		/// <param name="localStateSchema">Local State Schema</param>
 		/// <returns>Application call transaction</returns>
 		public static Transaction AppCall(
 			Address from,
