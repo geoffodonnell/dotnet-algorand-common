@@ -18,7 +18,7 @@ namespace Algorand.Common {
 		public virtual Transaction[] Transactions { get; protected set; }
 
 		/// <summary>
-		/// 
+		/// The signed transactions in the group
 		/// </summary>
 		public virtual SignedTransaction[] SignedTransactions { get; protected set; }
 
@@ -42,7 +42,7 @@ namespace Algorand.Common {
 		/// <summary>
 		/// Add a transaction to the transaction group
 		/// </summary>
-		/// <param name="tx"></param>
+		/// <param name="tx">Transaction to add to the group</param>
 		public virtual void Add(Transaction tx) {
 
 			if (tx is null) {
@@ -62,30 +62,33 @@ namespace Algorand.Common {
 		/// <summary>
 		/// Sign transactions using the provided <see cref="Account"/> instance.
 		/// </summary>
-		/// <param name="account"></param>
-		public virtual void Sign(Account account) {
+		/// <param name="account">Account to perform signing</param>
+		/// <param name="sender">Sender of transaction(s) to sign (if different than account)</param>
+		public virtual void Sign(Account account, Address sender = null) {
 
-			PerformSign(account.Address, s => s.Sign(account));
+			PerformSign(sender ?? account.Address, s => s.Sign(account));
 		}
 
 		/// <summary>
 		/// Sign transactions using the provided <see cref="LogicsigSignature"/> instance.
 		/// </summary>
-		/// <param name="logicsig"></param>
-		public virtual void SignWithLogicSig(LogicsigSignature logicsig) {
+		/// <param name="logicsig">LogicSig to perform signing</param>
+		/// <param name="sender">Sender of transaction(s) to sign (if different than account)</param>
+		public virtual void SignWithLogicSig(LogicsigSignature logicsig, Address sender = null) {
 
-			PerformSign(logicsig.Address, s => SignLogicsigTransaction(logicsig, s));
+			PerformSign(sender ?? logicsig.Address, s => s.Sign(logicsig));
 		}
 
 		/// <summary>
 		/// Sign transactions using the provided private key.
 		/// </summary>
 		/// <param name="privateKey"></param>
-		public virtual void SignWithPrivateKey(byte[] privateKey) {
+		/// <param name="sender">Sender of transaction(s) to sign (if different than account)</param>
+		public virtual void SignWithPrivateKey(byte[] privateKey, Address sender = null) {
 
 			var account = new Account(privateKey);
 
-			PerformSign(account.Address, s => s.Sign(account));
+			PerformSign(sender ?? account.Address, s => s.Sign(account));
 		}
 
 		/// <summary>
@@ -135,26 +138,6 @@ namespace Algorand.Common {
 					var signed = action(Transactions[i]);
 					SignedTransactions[i] = signed;
 				}
-			}
-		}
-
-		/// <summary>
-		/// Sign the provided <see cref="Transaction"/> with the <see cref="LogicsigSignature"/>.
-		/// </summary>
-		/// <param name="logicsig">Logic Sig</param>
-		/// <param name="tx">Transaction</param>
-		/// <returns></returns>
-		protected static SignedTransaction SignLogicsigTransaction(
-			LogicsigSignature logicsig, Transaction tx) {
-
-			try {
-				return tx.Sign(logicsig);
-			} catch (Exception) {
-				if (tx.Sender.Equals(logicsig.Address)) {
-					return new SignedTransaction(tx, logicsig.Sig);
-				}
-
-				throw;
 			}
 		}
 
