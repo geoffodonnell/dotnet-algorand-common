@@ -97,7 +97,7 @@ namespace Algorand.Common {
 
 			result.Sender = from;
 			result.Fee = txParams.Fee >= MinFee ? txParams.Fee : MinFee;
-			result.GenesisID = txParams.GenesisId;
+			result.GenesisId = txParams.GenesisId;
 			result.GenesisHash = new Digest(txParams.GenesisHash);
 			result.FirstValid = txParams.LastRound;
 			result.LastValid = txParams.LastRound + 1000;
@@ -149,7 +149,7 @@ namespace Algorand.Common {
 				Sender = from,
 				ApplicationId = application,
 				Fee = txParams.Fee >= MinFee ? txParams.Fee : MinFee,
-				GenesisID = txParams.GenesisId,
+				GenesisId = txParams.GenesisId,
 				GenesisHash = new Digest(txParams.GenesisHash),
 				FirstValid = txParams.LastRound,
 				LastValid = txParams.LastRound + 1000
@@ -170,7 +170,7 @@ namespace Algorand.Common {
 				Sender = assetParams.Creator,
 				AssetParams = assetParams,
 				Fee = txParams.Fee >= MinFee ? txParams.Fee : MinFee,
-				GenesisID = txParams.GenesisId,
+				GenesisId = txParams.GenesisId,
 				GenesisHash = new Digest(txParams.GenesisHash),
 				FirstValid = txParams.LastRound,
 				LastValid = txParams.LastRound + 1000
@@ -221,7 +221,7 @@ namespace Algorand.Common {
 			ulong? fee = null,
 			byte[] note = null) {
 
-			return Pay(from, to, amount, null, txParams, fee, note);
+			return Pay(from, to, amount, 0, txParams, fee, note);
 		}
 
 		/// <summary>
@@ -229,7 +229,7 @@ namespace Algorand.Common {
 		/// </summary>
 		/// <param name="from">Sender address</param>
 		/// <param name="to">Recipient address</param>
-		/// <param name="asset">Asset ID (0 or null for $ALGO)</param>
+		/// <param name="asset">Asset ID (0 for $ALGO)</param>
 		/// <param name="amount">Amount of asset</param>
 		/// <param name="txParams">Network parameters</param>
 		/// <param name="fee">Transaction fee</param>
@@ -239,7 +239,7 @@ namespace Algorand.Common {
 			Address from,
 			Address to,
 			ulong amount,
-			ulong? asset,
+			ulong asset,
 			TransactionParametersResponse txParams,
 			ulong? fee = null,
 			byte[] note = null) {
@@ -248,7 +248,7 @@ namespace Algorand.Common {
 
 			Transaction result;
 
-			if (!asset.HasValue || asset == 0) {
+			if (asset == 0) {
 				result = PaymentTransaction.GetPaymentTransactionFromNetworkTransactionParameters(
 					from, to, amount, null, txParams);
 			} else {
