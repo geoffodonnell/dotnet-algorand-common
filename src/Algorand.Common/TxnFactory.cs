@@ -28,6 +28,7 @@ namespace Algorand.Common {
 		/// <param name="clearStateProgram">Clear program</param>
 		/// <param name="globalStateSchema">Global State Schema</param>
 		/// <param name="localStateSchema">Local State Schema</param>
+		/// <param name="rekeyTo">Rekey to address</param>
 		/// <returns>Application call transaction</returns>
 		public static Transaction AppCall(
 			Address from,
@@ -43,7 +44,8 @@ namespace Algorand.Common {
 			TEALProgram approvalProgram = null,
 			TEALProgram clearStateProgram = null,
 			StateSchema globalStateSchema = null,
-			StateSchema localStateSchema = null) {
+			StateSchema localStateSchema = null,
+			Address rekeyTo = null) {
 
 			ApplicationCallTransaction result = null;
 
@@ -122,6 +124,10 @@ namespace Algorand.Common {
 
 			if (note != null) {
 				result.Note = note;
+			}
+
+			if (rekeyTo != null) {
+				result.RekeyTo = rekeyTo;
 			}
 
 			return result;
